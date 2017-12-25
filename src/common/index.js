@@ -5,8 +5,7 @@ class Utils {
             if (obj && typeof obj === "object") {
                 return obj;
             }
-        } catch (e) {
-        }
+        } catch (e) { }
         return false;
     }
 
