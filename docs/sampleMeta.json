@@ -1,0 +1,8 @@
+{
+    "provider": "String",
+    "requiresInstall": "Boolean",
+    "installation": {
+        "packageName": "String",
+        "currentVersion": "String"
+    }
+}

@@ -1,50 +1,61 @@
-import * as  path from 'path';
-import * as  fs from 'fs';
-import { Utils, Constants } from "../common";
-import { promisify } from 'util';
-import { write, WriteStream } from 'fs';
+const path = require('path');
+const fs = require('fs');
+const { Utils, Constants } = require('../common');
+const { promisify } = require('util');
+const DBProviderException = require('../exception');
 
 const mkdirPromised = promisify(fs.mkdir);
+const pathToMetaFolder = path.resolve(process.cwd(), Constants.DB_FOLDER_NAME);
+const pathToMetaFile = path.resolve(pathToMetaFolder, Constants.META_FILE_NAME)
 
 class MetaService {
-
     static getMeta() {
         return new Promise((resolve, reject) => {
-            let pathToDBMeta = path.resolve(process.cwd(), Constants.DB_FOLDER_NAME);
-            fs.access(path.pathToDBMeta, fs.constants.R_OK | fs.constants.W_OK, (error) => {
+            fs.access(pathToMetaFolder, fs.constants.R_OK | fs.constants.W_OK, (error) => {
                 if (error) {
                     if (error.code === "ENOENT") return resolve({});
                     else return reject(error);
                 }
-                let pathToMetaFile = path.resolve(pathToDBMeta, Constants.META_FILE_NAME);
-                fs.readFile(pathToMetaFile, { encoding: "utf-8", flag: "r" }, (error, data) => {
-                    let metadata = Utils.tryParseJSON(data) || {};
-                    resolve(metadata);
-                });
+                return readFromMetaFile;
             });
         });
     }
 
     static createMeta(providerName, metadata) {
-        let pathToMetaFolder = path.resolve(process.cwd(), Constants.DB_FOLDER_NAME);
         return mkdirPromised(pathToMetaFolder).then(() => {
-            return new Promise((resolve, reject) => {
-                let pathToMetaFile = path.resolve(pathToMetaFolder, Constants.META_FILE_NAME);
-                let writeStream = fs.createWriteStream(pathToMetaFile);
-                writeStream.write(JSON.stringify({ providerName: metadata }));
-                writeStream.on('error', (error) => {
-                    reject(error);
-                });
-                writeStream.on('close', () => {
-                    resolve(metadata);
-                });
-            });
+            return writeIntoMetaFile({ providerName: metadata });
         });
     }
 
-    static updateMetadata() {
-
+    static updateMeta(providerName, providerMeta, metadata) {
+        metadata[providerName] = providerMeta;
+        return writeIntoMetaFile(metadata);
     }
+}
+
+const writeIntoMetaFile = (content) => {
+    return new Promise((resolve, reject) => {
+        let writeStream = fs.createWriteStream(pathToMetaFile);
+        writeStream.write(JSON.stringify(content));
+        writeStream.on('error', (error) => {
+            reject(error);
+        });
+        writeStream.on('close', () => {
+            resolve(metadata);
+        });
+    });
+}
+
+const readFromMetaFile = () => {
+    return new Promise((resolve, reject) => {
+        let readStream = fs.createReadStream(pathToMetaFile);
+        let contentOfMetaFile = "";
+        readStream.on('data', (chunk) => {
+            contentOfMetaFile = contentOfMetaFile.concat(String(chunk, 'utf-8'));
+        });
+        readStream.on('end', () => resolve(contentOfMetaFile));
+        readStream.on('error', error => reject(error));
+    });
 }
 
 

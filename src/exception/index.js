@@ -8,3 +8,5 @@ class DBProviderException {
         this.exceptionProvider.error(`Error: Message: ${this.error.message}, Stack => ${this.error.stack}`);
     }
 }
+
+module.exports = DBProviderException;
