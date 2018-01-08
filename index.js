@@ -1,9 +1,9 @@
-import { Constants } from './src/common/index';
-import * as ProviderService from './src/Provider/index';
+const { Utils } = require('./src/common');
+const ProviderService = require('./src/provider');
 
-module.exports = ({
-    provider = Constants.LOCAL_PROVIDER,
-    ...rest
-} = {}) => {
-    return ProviderService.initiateAndFetchProvider({ provider, rest });
+module.exports = (options = {}) => {
+    if (Utils.isEmpty(options)) {
+        return Promise.reject("Empty Options Provided");
+    }
+    return ProviderService.initiateAndFetchProvider(options);
 };

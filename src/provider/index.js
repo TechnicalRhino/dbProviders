@@ -1,5 +1,5 @@
-import * as DBProviderException from '../exception/index';
-import * as Options from '../options/index';
+const DBProviderException = require('../exception');
+const Options = require('../options');
 
 class ProviderService {
     static initateAndFetchProvider(options) {
@@ -18,7 +18,7 @@ class ProviderService {
  * @param {*} options 
  */
 const validateProvider = (options) => {
-    return Options.validate(options);
+    return Options.va(options);
 }
 
 /**

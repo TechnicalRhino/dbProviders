@@ -1,8 +1,9 @@
-import { Utils, Constants } from '../common/index';
-import * as MetaService from "../metaservice/index";
+const { Utils, Constants } = require('../common');
+const MetaService = require('../metaservice');
 const has = Object.prototype.hasOwnProperty;
+
 class Options {
-    static validate(options) {
+    static validateAndFetchMeta(options) {
         return MetaService.getMeta(options).then(metadata => {
             let isMetaEmpty = Utils.isEmpty(metadata);
             let providerName = options.provider;

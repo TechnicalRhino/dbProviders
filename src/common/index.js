@@ -24,7 +24,6 @@ class Utils {
 class Constants {
     static META_FILE_NAME = "meta.json";
     static DB_FOLDER_NAME = ".dbmeta";
-    static LOCAL_PROVIDER = "Local";
 }
 
 module.exports.Utils = Utils;
